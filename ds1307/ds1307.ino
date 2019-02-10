@@ -1,0 +1,37 @@
+#include <Wire.h>
+
+//registres DS1307   sec min heure l..d jour mois annee
+byte ds1307reg[] = {0x00,0x58,0x11,0x01,0x11,0x02,0x19};
+
+void setup() {
+    Wire.begin();
+    Serial.begin(9600);
+    if( false ){ // passer à true pour mettre a l'heure
+        Wire.beginTransmission(0x68);              // Start
+        Wire.write(0);                             // addresse du premier registre
+        Wire.write(ds1307reg, sizeof(ds1307reg) );
+        Wire.endTransmission();                    // Stop
+        Serial.println("Mise à l'heure effectuee");
+    }
+}//END setup
+
+void loop(){
+	  //----- lecture des registres du DS1307 RTC --------------
+    Wire.beginTransmission(0x68);              // Start
+    Wire.write(0);                             // addresse du premier registre
+    Wire.endTransmission();                    // Stop
+	  Wire.requestFrom(0x68,sizeof(ds1307reg));  // Start+lecture+stop 
+    //----- recuperer le contenu du tampon ------------------- 
+    for(byte i=0;i<sizeof(ds1307reg);i++) ds1307reg[i]=Wire.read(); 
+    //----- affichage si au moins 1 sec s'est ecoulee --------
+    static byte last=0xFF;
+    if( last!=ds1307reg[0]){ last=ds1307reg[0];
+        Serial.print( ds1307reg[2],HEX ); 
+        Serial.print( ':');
+        Serial.print( ds1307reg[1],HEX ); 
+        Serial.print( ':');
+        Serial.print( ds1307reg[0],HEX ); 
+        Serial.println();
+    }//------------------------------------------------------
+}//END loop
+
