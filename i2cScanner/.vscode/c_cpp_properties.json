@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:\\arduino-1.8.5.paf\\portable\\packages\\arduino\\tools\\**",
+                "C:\\arduino-1.8.5.paf\\portable\\packages\\arduino\\hardware\\avr\\1.6.23\\**"
+            ],
+            "forcedInclude": [
+                "C:\\arduino-1.8.5.paf\\portable\\packages\\arduino\\hardware\\avr\\1.6.23\\cores\\arduino\\Arduino.h"
+            ],
+            "intelliSenseMode": "msvc-x64"
+        }
+    ],
+    "version": 4
+}
