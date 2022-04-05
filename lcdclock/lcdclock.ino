@@ -1,8 +1,6 @@
 /*---------------------------------------- 
   Programme complet i2c LCD+EEPROM+DS1307
   Auteurs des solutions : 
-  clock et lcd: Sauvage Rullier
-  eeprom: Douillère Sankara Boucard Porras
 ----------------------------------------*/
 #include <Wire.h>
 #include "rgb_lcd.h"
@@ -14,17 +12,18 @@ rgb_lcd lcd; // objet LCD Grove
 //byte adresse[]={0x02,0x00}; // groupe G2
 
 // Nom de l'equipe de taille exactement 16 caracteres
-//              0123456789ABCDEF
-char message[]="Momopop's       ";
+//             "0123456789ABCDEF"
+char message[]="Lapins Blancs   ";
 
 //registres DS1307   sec min heure l..d jour mois annee
-byte ds1307reg[] = {0x00,0x15,0x11,0x01,0x18,0x02,0x19};
+byte ds1307reg[] = {0x00,0x41,0x13,0x01,0x5,0x04,0x22};
 
 void setup(){
     Wire.begin();
     lcd.begin(16,2);
     Wire.begin();
     Serial.begin(9600);
+    
     if(false){ // passer à true pour écrire l'EEPROM
         Wire.beginTransmission(0x50);
         Wire.write(adresse, sizeof(adresse) );

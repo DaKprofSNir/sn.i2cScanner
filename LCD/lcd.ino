@@ -3,7 +3,7 @@
 #include "rgb_lcd.h"
 
 rgb_lcd lcd; 
-char message[]="SNir"; // taille max 20 caracteres
+char message[20]="SNir "; // taille max 20 caracteres
 
 void setup(){
     Wire.begin();
@@ -17,7 +17,6 @@ void loop(){
   //---- ecrire sur la premiere ligne
 	lcd.setCursor(0, 0);
 	lcd.print(message);
-	lcd.print(" ");
 	lcd.print(random(255));
 
   //---- ecrire sur la deuxieme ligne

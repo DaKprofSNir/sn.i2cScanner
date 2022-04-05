@@ -1,3 +1,4 @@
+/*
 Mise à l'heure/lecture d'une horloge RTC DS1307
 
 Le module contient deux composants I2C :
@@ -9,3 +10,4 @@ GND <----> GND
 VCC <----> VCC
 SDA <----> SDA
 SCL <----> SCL
+*/
