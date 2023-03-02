@@ -1,5 +1,6 @@
 /*
 Mise à l'heure/lecture d'une horloge RTC DS1307
+Version accès direct aux registres
 
 Le module contient deux composants I2C :
 - RTC DS1307 à l'adresse 0x68

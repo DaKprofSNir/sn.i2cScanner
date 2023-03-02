@@ -1,7 +1,7 @@
 #include <Wire.h>
 
 //registres DS1307   sec min heure l..d jour mois annee
-byte ds1307reg[] = {0x00,0x20,0x15,0x01,0x04,0x04,0x22};
+byte ds1307reg[] = {0x00,0x20,0x14,0x03,0x08,0x03,0x23};
 
 void setup() {
     Wire.begin();
@@ -18,9 +18,9 @@ void setup() {
 void loop(){
 	  //----- lecture des registres du DS1307 RTC --------------
     Wire.beginTransmission(0x68);              // Start
-    Wire.write(0);                             // addresse du premier registre
+    Wire.write(0);                             // pointer l'addresse du premier registre
     Wire.endTransmission();                    // Stop
-	Wire.requestFrom(0x68,sizeof(ds1307reg));  // Start+lecture+stop 
+	  Wire.requestFrom(0x68,sizeof(ds1307reg));  // Start+lecture+stop 
 	  
     //----- recuperer le contenu du tampon ------------------- 
     for(byte i=0;i<sizeof(ds1307reg);i++) ds1307reg[i]=Wire.read(); 

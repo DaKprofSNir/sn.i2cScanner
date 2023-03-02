@@ -21,7 +21,7 @@ void eeprom_write(byte composant, uint16_t cible, byte data) {
     Wire.write(cible & 0xFF);  // poid faible de l'adresse
     Wire.write(data);
   Wire.endTransmission();
-}
+}//eeprom_write()
 
 // lire 1 octet
 byte eeprom_i2c_read(byte composant, uint16_t cible) {
@@ -32,11 +32,8 @@ byte eeprom_i2c_read(byte composant, uint16_t cible) {
     Wire.endTransmission();
     // lire 1 octet depuis le composant
     Wire.requestFrom(composant, 1);
-    if(Wire.available())
-        return Wire.read();
-    else
-        return 0;
-}
+    return Wire.available()?Wire.read():0;
+}//eeprom_i2c_read()
 
 
 void loop() {
@@ -45,4 +42,4 @@ void loop() {
     cerise++;
     eeprom_write( AdresseComposant, AdresseInterne, cerise);
     delay(5000);
-}
+}//loop()
