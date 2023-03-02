@@ -1,5 +1,0 @@
-{
-    "board": "arduino:avr:uno",
-    "port": "COM3",
-    "sketch": "i2cScanner.ino"
-}

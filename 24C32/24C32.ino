@@ -1,6 +1,6 @@
 #include <Wire.h>
 
-char message[]="SNir"; // taille max 30 caracteres
+char message[32]="SNir"; // taille max 30 caracteres
 //byte adresse[]={0x01,0x00}; // groupe G1
 //byte adresse[]={0x02,0x00}; // groupe G2
 
