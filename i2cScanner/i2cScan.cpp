@@ -32,8 +32,11 @@ void i2cScan(){
             if (address<16) SerialScan.print("0");
             SerialScan.print(address,HEX);
             //--- adresse connue ?
-            if( 0x5C == address ) SerialScan.print("  DHT12  Temp & Humidity");
-            if( 0x68 == address ) SerialScan.print("  DS1307 RTC");
+            if( 0x19 == address       ) SerialScan.print("  LSM303  Accéléromètre+Boussole");
+            if( 0x1F == (address|0x1) ) SerialScan.print("  LSM9D50 Gyroscope+Accéléromètre");
+            if( 0x3D == (address|0x1) ) SerialScan.print("  SSD1306 OLED 128x64");
+            if( 0x5C == address       ) SerialScan.print("  DHT12  Temp & Humidity");
+            if( 0x68 == address       ) SerialScan.print("  DS1307 RTC");
             if( 0x27 == (address|0x7) ) SerialScan.print("  PCF8574 /LCD interface");
             if( 0x57 == (address|0x7) ) SerialScan.print("  24Cxx EEPROM");
             if( 0x43 == (address|0x3) ) SerialScan.print("  INA219 Current and Voltage Sensor");
@@ -46,4 +49,3 @@ void i2cScan(){
 
   
 }
-
