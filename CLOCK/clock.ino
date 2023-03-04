@@ -1,35 +1,33 @@
 /*---------------------------------------- 
-  Programme complet i2c OLED+EEPROM+DS1307
+  D. KIHN Institut Limayrac Toulouse 2023
+  Programme complet i2c UNO+OLED+EEPROM+DS1307 avec mise à l'heure par 4 boutons
   Auteurs des solutions : 
 ----------------------------------------*/
 #include <Wire.h>
 #include <Adafruit_SH110X.h>
 
-#define OLED_i2c_Addr 0x3c  //initialise avec l'adresse 0x3C (typiquement OLED chinois)
-//#define OLED_i2c_Addr 0x3d //initialise avec l'adresse 0x3D (typiquement OLED Adafruit)
+#define OLED_i2c_Addr 0x3c  // OLED chinois = 0x3C, OLED Adafruit = 0x3D
 
-#define SCREEN_WIDTH 128  // Largeur en pixels
-#define SCREEN_HEIGHT 64  // hauteur en pixels
-#define OLED_RESET -1     // Pas de broche reset sur ce module
-Adafruit_SH1106G display = Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+// initialisation de l'OLED Largeur=128, Hauteur=64, @de l'interface i2c utilisé, Pas de broche reset sur ce module=-1
+Adafruit_SH1106G display = Adafruit_SH1106G(128, 64, &Wire, -1);
 
-// eeprom DECOMMENTEZ la ligne du groupe
-byte adresse[] = { 0x01, 0x00 };  // groupe G1
-//byte adresse[]={0x02,0x00}; // groupe G2
+#error Nom de l'équipe en EEPROM : il faut décommenter la ligne du groupe puis commentez la ligne 14
+//byte adresse[] = { 0x01, 0x00 }; // nom équipe pour le groupe G1
+//byte adresse[] = { 0x02, 0x00 }; // nom équipe pour le groupe G2
 
 // Nom de l'equipe centré et de taille exactement 21 caracteres + zero terminal
 //             "012345678901234567890"
 char message[]="    Lapins Blancs    \0";
 
-//registres DS1307 au format BCD => 0x09 + 1 ==> 0x10 et non 0xA0 ! et 0x59 + 1 ==> 0x00 on repasse à zéro après 59 secondes
-//                  sec   min   heure l..d  jour  mois  annee
+//Les registres du DS1307 sont au format BCD => 0x09 + 1 ==> 0x10 et non 0xA0 !
+//                  sec   min  heure l..d  jour  mois  annee
 byte ds1307reg[]={ 0x00, 0x41, 0x13, 0x01, 0x05, 0x04, 0x24 };
 
-// declaration de la barre 4 boutons sur les broches 3 à 7 pour la mise à l'heure 
+// declaration des broches 3 à 7 de la barre 4 boutons pour la mise à l'heure manuelle
 enum {pinBPminute=3, pinBPheure, pinBPjour, pinBPRaz, pinGND};
 
 void setup() {
-  delay(1000);  // parachute + OLED power up
+  delay(1000);  // parachute
 
   pinMode(pinGND, OUTPUT); digitalWrite(pinGND, LOW);
   pinMode(pinBPRaz, INPUT_PULLUP);
@@ -55,7 +53,7 @@ void setup() {
   if(false){ // passer à true pour mettre a l'heure
     Wire.beginTransmission(0x68);  // Start
     Wire.write(0);                 // addresse du premier registre
-    Wire.write(ds1307reg, sizeof(ds1307reg));
+    Wire.write(ds1307reg, sizeof(ds1307reg)); // envoit des octets
     Wire.endTransmission();  // Stop
     Serial.println("Mise à l'heure effectuee");
     while (true);
@@ -68,7 +66,7 @@ void setup() {
 void loop(){
   //---- lire le nom de l'equipe dans l'EEPROM
   Wire.beginTransmission(0x50);             // Start
-  Wire.write(adresse, sizeof(adresse));     // addresse du premier registre
+  Wire.write(adresse, sizeof(adresse));     // addresse du message dans l'eeprom
   Wire.endTransmission();                   // Stop
   Wire.requestFrom(0x50, sizeof(message));  // Start+lecture+stop
   //----- recuperer le contenu du tampon -------------------
@@ -117,27 +115,25 @@ void loop(){
     display.display();
   }//END if(last!=ds1307reg[0])
 
-  // mise à l'heure par la barre de 4 boutons
-  static byte BPRaz,BPjour,BPheure,BPminute=BPheure=BPjour=BPRaz=HIGH;
-  #define WRDS1307 {Wire.beginTransmission(0x68); Wire.write(0); Wire.write(ds1307reg,sizeof(ds1307reg)); Wire.endTransmission();}
+  // Mise à l'heure avec la barre de 4 boutons
+  static byte BPRaz=HIGH,BPjour=HIGH,BPheure=HIGH,BPminute=HIGH;
   if( BPRaz!=digitalRead(pinBPRaz) ) if( (BPRaz=digitalRead(pinBPRaz)) ){
-      ds1307reg[0]=0x00; ds1307reg[1]=0x41; ds1307reg[2]=0x13; ds1307reg[3]=0x01; ds1307reg[4]=0x05; ds1307reg[5]=0x03; ds1307reg[6]=0x23;
-      WRDS1307;
+    ds1307reg[0]=0x00; ds1307reg[1]=0x41; ds1307reg[2]=0x13; ds1307reg[3]=0x01; ds1307reg[4]=0x05; ds1307reg[5]=0x03; ds1307reg[6]=0x23;
+    goto EcrireRegDS1307;    
   }//BPRaz
-
   if( BPjour!=digitalRead(pinBPjour) ) if( (BPjour=digitalRead(pinBPjour)) ){
-      if( (++ds1307reg[4]&0x0F)>9 ) if( (ds1307reg[4]+=6)>0x31 ) ds1307reg[4]=0x01;
-      WRDS1307;
+    if( (++ds1307reg[4]&0x0F)>9 ) if( (ds1307reg[4]+=6)>0x31 ) ds1307reg[4]=0x01; //dans la vraie vie, faudrait aussi gérer les mois à 28,29,et 30 jours
+    goto EcrireRegDS1307;    
   }//BPjour
-
   if( BPheure!= digitalRead(pinBPheure) ) if( (BPheure=digitalRead(pinBPheure)) ){
-      if( (++ds1307reg[2]&0x0F)>9 ) if( (ds1307reg[2]+=6)>=0x23 ) ds1307reg[2]=0x00;
-      WRDS1307;      
+    if( (++ds1307reg[2]&0x0F)>9 ) if( (ds1307reg[2]+=6)>=0x23 ) ds1307reg[2]=0x00;
+    goto EcrireRegDS1307;    
   }//BPmois
-
   if( BPminute!=digitalRead(pinBPminute) ) if( (BPminute=digitalRead(pinBPminute)) ){
-      if( (++ds1307reg[1]&0x0F)>9 ) if( (ds1307reg[1]+=6)>=0x59 ) ds1307reg[1]=0x00;
-      WRDS1307;      
-  }//BPmois
+    if( (++ds1307reg[1]&0x0F)>9 ) if( (ds1307reg[1]+=6)>=0x59 ) ds1307reg[1]=0x00; 
+    EcrireRegDS1307:
+    Wire.beginTransmission(0x68); Wire.write(0); Wire.write(ds1307reg,sizeof(ds1307reg)); Wire.endTransmission();      
+    last=0xFF;
+  }//BPminute
 
 }//END loop()
