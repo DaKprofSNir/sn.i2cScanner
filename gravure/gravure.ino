@@ -1,12 +1,12 @@
 #include <Wire.h>
 
 char message[32]="CIEL SNir";
-byte adresse[]={0x00,0x00}; // adresse du premier octet du message gravé dans l'EEPROM
+byte adresse[]={0x??,0x??}; // adresse du premier octet du message gravé dans l'EEPROM
 
 void setup(){
-	delay(5000); // parachute
+  delay(5000); // parachute
   Serial.begin(9600);
-	Wire.begin();
+  Wire.begin();
 }//setup()
 
 void loop(){
@@ -14,7 +14,7 @@ void loop(){
 		case 'L': case 'l': case 'R': case 'r' : 
 			Serial.println("Lecture dans l'EEPROM i2c");
 			LectureEEPROM(); 
-			Serial.println("message");
+			Serial.println(message);
 			break;
 		case 'E': case 'e': case 'W': case 'w' : 
 			Serial.println("Ecriture dans l'EEPROM i2c");
