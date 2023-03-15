@@ -28,7 +28,7 @@ void loop(){
     //----- affichage si au moins 1 sec s'est ecoulee --------
     static byte last=0xFF;
     if( last!=ds1307reg[0]){ last=ds1307reg[0];
-        switch( ds1307reg[4] ){
+        switch( ds1307reg[3] ){
         case 1 : Serial.print("Lundi "); break;
         case 2 : Serial.print("Mardi "); break;
         case 3 : Serial.print("Mercredi "); break;
